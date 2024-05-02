@@ -4,7 +4,6 @@ import os
 import dataset
 import random
 import pickle
-import datetime
 
 from pathlib import Path
 from util import get_check_point_num
@@ -76,7 +75,6 @@ def learner(model, task):
     losses = 0
 
     """ Training """
-    start_time = datetime.datetime.now()
     counter = 0
     total_steps = 10000000
     epoch_steps = 598000
@@ -94,19 +92,8 @@ def learner(model, task):
                 manager.save(checkpoint_number=int(global_step))
             
             if counter != 1 and step % int(epoch_steps/200) == 0:
-                with open(os.path.join(FLAGS.task['dir_log'], 'train_MSE.txt'), 'a') as file:
+                with open(os.path.join(task['dir_log'], 'train_MSE.txt'), 'a') as file:
                     file.write(f'{step} {losses/counter:.9f}\n')
-
-                # elapsed_time = datetime.timedelta(seconds=int((datetime.datetime.now() - start_time).total_seconds()))
-                # itter_speed = counter / elapsed_time.total_seconds() # it/s
-                # remain_steps = total_steps - step
-                # remain_time = str(datetime.timedelta(seconds=int(remain_steps / itter_speed))).replace('days,', '').replace('day,', '').replace('  ', '-')
-                # lr = optimizer._decayed_lr(tf.float32).numpy()
-
-                # monitor_str = f"'{step}'({round(step/total_steps*100, 1)}%) [{str(elapsed_time).replace('days,', '').replace('day,', '').replace('  ', '-')} / {remain_time}] {itter_speed:.2f}it/s  MSE '{losses/counter:.9f}' {lr:.3e}"
-                # print(monitor_str)
-                # with open(os.path.join(task['dir_log'], 'main_log.txt'), 'a') as file:
-                #     file.write(f'{monitor_str}\n')
 
         global_step.assign_add(1)
 
@@ -181,8 +168,6 @@ def main(argv):
     tf.random.set_seed(FLAGS.seed)
     tf.compat.v1.set_random_seed(FLAGS.seed)
 
-    # ['DIGL', 'SDRF', 'FOSR', 'PIRF']
-
     if FLAGS.rewire == None:
         rewire_name = None
         model = CylinderFlow(MGN(output_size=3))
@@ -201,7 +186,6 @@ def main(argv):
     elif FLAGS.rewire == 'PIRF':
         rewire_name = '_pirf'
         model = CylinderFlowPIRF(MGN(3))
-
 
     task['rewire_name'] = rewire_name
 
