@@ -3,7 +3,7 @@
 
 ## Set environment
 The environment can be set up using either `environment.yaml` file or manually installing the dependencies.
-### Using an environment.yml file
+### Using an environment.yaml file
 ```
 conda env create -f environment.yaml
 ```
@@ -20,14 +20,8 @@ conda env create -f environment.yaml
 
 ## Download datasets
 We host the datasets on this [link](https://figshare.com/s/06f3782d7ee7d23d9d31)
-All data of rewired edges gets downloaded the `data/cylinder_flow` directory.
+All data gets downloaded the `data/cylinder_flow` directory.
 
-```
-Basic data for cylinder flow is downloaded through the following command.
-mkdir -p ${DATA}
-bash download_dataset.sh cylinder_flow ${DATA}
-If there is no rewired data, data can be created through 'preprocessing/rewire_baseline.py' and 'preprocessing/rewire_pirf.py'
-```
 
 ## How to run
 To run each experiment, navigate into `PIRF-main`. Then, run the following command:

@@ -3,14 +3,16 @@ import tensorflow as tf
 import networkx as nx
 
 import os
-import datetime
 import random
 import warnings
 import random
 import json
 import functools
 
-from GraphRicciCurvature.OllivierRicci import OllivierRicci
+from digl import digl_rewire
+from sdrf import sdrf_rewire
+from fosr import fosr_rewire
+from borf import OllivierRicciBORF
 
 def load_dataset(path, split):
     def _parse(proto, meta):
@@ -101,10 +103,6 @@ for i in range(len(gpus)):
 	tf.config.experimental.set_memory_growth(gpus[i], True)
 
 
-from digl import digl_rewire
-from sdrf import sdrf_rewire
-from fosr import fosr_rewire
-from borf import OllivierRicciBORF
 
 dataset_dir = '../data/cylinder_flow'
 

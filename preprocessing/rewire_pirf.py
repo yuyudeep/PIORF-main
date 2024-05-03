@@ -3,7 +3,6 @@ import tensorflow as tf
 import networkx as nx
 
 import os
-import datetime
 import random
 import warnings
 import random
