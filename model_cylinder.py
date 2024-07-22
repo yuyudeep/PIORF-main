@@ -160,35 +160,7 @@ class CylinderFlowPIRF(snt.Module):
         self.pool = snt.Linear(1)
 
         self.pooling_ratio = 3
-        self.mode_add = True
-        self.mode_del = False
 
-    @tf.function(input_signature=[
-        tf.TensorSpec(shape=[None], dtype=tf.int32), 
-        tf.TensorSpec(shape=[None, 2], dtype=tf.int32), 
-        tf.TensorSpec(shape=[None, 1], dtype=tf.float32)])
-    def get_del(self, nodes, edges, feat):
-        m = tf.shape(edges)
-        edges_flat = tf.reshape(edges, [-1])
-        
-        masks = tf.math.reduce_any(tf.reshape(nodes[:, None]==edges_flat[None, :], [-1, m[0], 2]), 2)
-        mask_shape = tf.shape(masks)
-        edges_bc = tf.broadcast_to(edges, [mask_shape[0], mask_shape[1], 2])
-
-        sub_edges = tf.ragged.boolean_mask(edges_bc, masks)
-        sens = tf.gather(feat, sub_edges[:, :, 0])
-        revs = tf.gather(feat, sub_edges[:, :, 1])
-        idxs = tf.multiply(sens, revs)
-
-        idxs = tf.map_fn(tf.math.argmin, idxs, fn_output_signature=tf.int64)
-        
-        edge = tf.gather(sub_edges, idxs, batch_dims=1)
-        edge = tf.squeeze(edge, 1)
-
-        dels = edge[:, 0]
-        delr = edge[:, 1]
-        return dels, delr
-    
     def _build_graph(self, inputs, is_training):
         node_type = tf.one_hot(inputs['node_type'][:, 0], NodeType.SIZE)
         node_features = tf.concat([inputs['velocity'], node_type], axis=-1)
@@ -205,36 +177,16 @@ class CylinderFlowPIRF(snt.Module):
         senders_add = tf.squeeze(inputs[f'senders_pirf'])
         senders_add.set_shape([None])
 
-
         # adding
-        if self.mode_add:
-            senders_add = senders_add[:N]
-            feat_top = tf.gather(feat, senders_add)
-            cdist = pairwise_dist(feat, feat_top)
-            receivers_add = tf.argmax(cdist, axis=0)
-            receivers_add = tf.cast(receivers_add, tf.int32)
-            senders_add, receivers_add = tf.concat([senders_add, receivers_add], axis=0), tf.concat([receivers_add, senders_add], axis=0)
+        senders_add = senders_add[:N]
+        feat_top = tf.gather(feat, senders_add)
+        cdist = pairwise_dist(feat, feat_top)
+        receivers_add = tf.argmax(cdist, axis=0)
+        receivers_add = tf.cast(receivers_add, tf.int32)
+        senders_add, receivers_add = tf.concat([senders_add, receivers_add], axis=0), tf.concat([receivers_add, senders_add], axis=0)
 
-            senders = tf.concat([senders, senders_add], axis=0)
-            receivers = tf.concat([receivers, receivers_add], axis=0)
-
-        # del
-        if self.mode_del:
-            senders_del = senders_add[-1*N:]
-            edges = tf.stack([senders, receivers], 1)
-
-            senders_del, receivers_del = self.get_del(senders_del, edges, feat)
-            senders_del, receivers_del = tf.concat([senders_del, receivers_del], axis=0), tf.concat([receivers_del, senders_del], axis=0)
-
-            edges = tf.expand_dims(tf.bitcast(tf.stack([senders, receivers], axis=1), tf.int64), 0)
-            edges = tf.expand_dims(edges, 0)
-
-            edges_del = tf.expand_dims(tf.bitcast(tf.stack([senders_del, receivers_del], axis=1), tf.int64), 0)
-            edges_del = tf.expand_dims(edges_del, 0)
-
-            edges = tf.sets.difference(edges, edges_del, aminusb=True, validate_indices=True).values
-            edges = tf.bitcast(edges, tf.int32)
-            senders, receivers = tf.unstack(edges, axis=1)
+        senders = tf.concat([senders, senders_add], axis=0)
+        receivers = tf.concat([receivers, receivers_add], axis=0)
 
         senders, receivers = check_unique(senders, receivers)
         
