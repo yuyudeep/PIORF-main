@@ -105,7 +105,7 @@ dataset_dir = '../data/cylinder_flow'
 
 for mode in ['train', 'valid', 'test']:
     writer_dir = dataset_dir
-    writer_path = os.path.join(writer_dir, f'{mode}_pirf.tfrecord')
+    writer_path = os.path.join(writer_dir, f'{mode}_piorf.tfrecord')
     writer = tf.io.TFRecordWriter(writer_path)
     ds = load_dataset(dataset_dir, mode)
     counter = 0
@@ -136,10 +136,10 @@ for mode in ['train', 'valid', 'test']:
         values_n = list(ricci_curvtures_node.values())
         senders_add = np.argsort(values_n)
 
-        feature_dict = {f'senders_pirf': bytes_feature(senders_add.astype(np.int32).tobytes())}
+        feature_dict = {f'senders_piorf': bytes_feature(senders_add.astype(np.int32).tobytes())}
         example = tf.train.Example(features=tf.train.Features(feature=feature_dict))
         writer.write(example.SerializeToString())
         
         counter += 1
-        print('pirf', mode, counter)
+        print('piorf', mode, counter)
 
