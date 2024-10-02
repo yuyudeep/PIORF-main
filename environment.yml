@@ -1,4 +1,4 @@
-name: PIRF
+name: PIORF
 channels:
   - conda-forge
   - defaults

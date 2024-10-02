@@ -14,7 +14,7 @@ from absl import logging
 
 from core_model_mgn import MGN
 
-from model_cylinder import CylinderFlow, CylinderFlowRewire, CylinderFlowPIRF
+from model_cylinder import CylinderFlow, CylinderFlowRewire, CylinderFlowPIORF
 from rollout import evaluate_cylinder
 
 
@@ -30,7 +30,7 @@ gpus = tf.config.list_physical_devices('GPU')
 
 FLAGS = flags.FLAGS
 flags.DEFINE_enum('mode', 'train', ['train', 'eval'], 'Train model, or run evaluation.')
-flags.DEFINE_enum('rewire', None, ['DIGL', 'SDRF', 'FoSR', 'BORF', 'PIRF'], 'rewire')
+flags.DEFINE_enum('rewire', None, ['DIGL', 'SDRF', 'FoSR', 'BORF', 'PIORF'], 'rewire')
 flags.DEFINE_enum('model', "MGN", ['MGN'], 'core models')
 flags.DEFINE_integer('num_rollouts', 1, 'No. of rollouts')
 flags.DEFINE_integer('seed', 10, 'No. of random seed')
@@ -183,9 +183,9 @@ def main(argv):
     elif FLAGS.rewire == 'BORF':
         rewire_name = '_borf'
         model = CylinderFlowRewire(MGN(3), rewire_name)
-    elif FLAGS.rewire == 'PIRF':
-        rewire_name = '_pirf'
-        model = CylinderFlowPIRF(MGN(3))
+    elif FLAGS.rewire == 'PIORF':
+        rewire_name = '_piorf'
+        model = CylinderFlowPIORF(MGN(3))
 
     task['rewire_name'] = rewire_name
 

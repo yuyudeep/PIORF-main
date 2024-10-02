@@ -148,9 +148,9 @@ class CylinderFlowRewire(snt.Module):
         return cur_velocity + velocity_update, pred_pressure
 
 
-class CylinderFlowPIRF(snt.Module):
+class CylinderFlowPIORF(snt.Module):
     def __init__(self, learned_model, name='Model'):
-        super(CylinderFlowPIRF, self).__init__(name=name)
+        super(CylinderFlowPIORF, self).__init__(name=name)
         self._learned_model = learned_model
 
         self._output_normalizer = Normalizer(size=2, name='output_normalizer')
@@ -174,7 +174,7 @@ class CylinderFlowPIRF(snt.Module):
         
         feat = self.pool(inputs['velocity'])
 
-        senders_add = tf.squeeze(inputs[f'senders_pirf'])
+        senders_add = tf.squeeze(inputs[f'senders_piorf'])
         senders_add.set_shape([None])
 
         # adding

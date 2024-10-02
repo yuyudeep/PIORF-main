@@ -1,4 +1,4 @@
-# HCMT: Rewiring with Physics Informed Ollivier-Ricci Curvature for Mesh Graph Neural Networks
+# PIORF: Physics-Informed Ollivier--Ricci Flow for Long-Range Interactions in Mesh Graph Neural Networks
 
 
 ## Set environment
@@ -24,7 +24,7 @@ All data gets downloaded the `data/cylinder_flow` directory.
 
 
 ## How to run
-To run each experiment, navigate into `PIRF-main`. Then, run the following command:
+To run each experiment, navigate into `PIORF-main`. Then, run the following command:
 
 ### Train a model:
 ```
@@ -33,7 +33,7 @@ python -m run_model --mode=train --model=MGN --rewire=DIGL
 python -m run_model --mode=train --model=MGN --rewire=SDRF
 python -m run_model --mode=train --model=MGN --rewire=FoSR
 python -m run_model --mode=train --model=MGN --rewire=BORF
-python -m run_model --mode=train --model=MGN --rewire=PIRF
+python -m run_model --mode=train --model=MGN --rewire=PIORF
 ```
 
 ### Generate trajectory rollouts:
@@ -43,5 +43,5 @@ python -m run_model --mode=eval --model=MGN --rewire=DIGL
 python -m run_model --mode=eval --model=MGN --rewire=SDRF
 python -m run_model --mode=eval --model=MGN --rewire=FoSR
 python -m run_model --mode=eval --model=MGN --rewire=BORF
-python -m run_model --mode=eval --model=MGN --rewire=PIRF
+python -m run_model --mode=eval --model=MGN --rewire=PIORF
 ```
